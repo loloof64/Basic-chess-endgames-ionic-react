@@ -1,0 +1,7 @@
+{
+  "name": "BasicChessEndgamesIonicReact",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
