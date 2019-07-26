@@ -7,23 +7,27 @@ export default class ChessBoard extends Component {
     render() {
         const position = this.props.position || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         const pieces = this.getPiecesFromPosition(position);
+        const whiteToPlay = position.split(" ")[1] === 'w';
 
         return (
             <div style={this.styles()[".board-root"]}>
                 {[0,1,2,3,4,5,6,7,8,9].map((row: number, rowIndex: number) => {
                     return [0,1,2,3,4,5,6,7,8,9].map((col: number, colIndex: number) => {
-                        return this.generateCell(row, col, pieces);
+                        return this.generateCell(row, col, pieces, whiteToPlay);
                     });
                 })}
             </div>
         )
     }
 
-    private generateCell = (row: number, col: number, pieces: string[][]) => {
+    private generateCell = (row: number, col: number, pieces: string[][], whiteToPlay: boolean) => {
         const key = `${row}${col}`;
         if (row === 0 || row === 9) {
             if (col >= 1 && col <= 8) {
                 return this.generateFileCoordinate(key, col);
+            }
+            else if (row === 9 && col === 9) {
+                return this.generatePlayerTurn(key, whiteToPlay);
             }
         }
         else {
@@ -55,6 +59,14 @@ export default class ChessBoard extends Component {
         const value = pieces[row-1][col-1];
         const pieceElement = this.getPieceElement(value);
         return (<div key={key} style={style}>{pieceElement}</div>)
+    }
+
+    private generatePlayerTurn(key: string, whiteToPlay: boolean) {
+        return (
+            <div key={key} style={this.styles()['.empty-zone']}>
+                <div style={this.styles()[whiteToPlay ? '.turn-white' : '.turn-black']}></div>
+            </div>
+        )
     }
 
     private getPieceElement = (value: any) => {
@@ -110,6 +122,7 @@ export default class ChessBoard extends Component {
     private styles = () => {
         const size = this.props.size || 200;
         const sizeString = `${size}px`;
+        const cellSizeString = `${size / 18.0}px`;
         const fontSize = Math.ceil(size * 0.05);
 
         return {
@@ -149,6 +162,8 @@ export default class ChessBoard extends Component {
                 'alignItems': 'center',
                 'borderRadius': '100%',
                 'backgroundColor': '#FFF',
+                'width': cellSizeString,
+                'height': cellSizeString,
             },
             ".turn-black": {
                 'display': 'flex',
@@ -156,6 +171,8 @@ export default class ChessBoard extends Component {
                 'alignItems': 'center',
                 'borderRadius': '100%',
                 'backgroundColor': '#000',
+                'width': cellSizeString,
+                'height': cellSizeString,
             }
         };
     }
