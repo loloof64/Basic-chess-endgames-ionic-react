@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import TouchBackend from 'react-dnd-touch-backend';
+import { DndProvider } from 'react-dnd';
 
 export default class ChessBoard extends Component {
 
@@ -11,13 +13,15 @@ export default class ChessBoard extends Component {
         const reversed = this.props.reversed || false;
 
         return (
-            <div style={this.styles()[".board-root"]}>
-                {[0,1,2,3,4,5,6,7,8,9].map((row: number, rowIndex: number) => {
-                    return [0,1,2,3,4,5,6,7,8,9].map((col: number, colIndex: number) => {
-                        return this.generateCell(row, col, pieces, whiteToPlay, reversed);
-                    });
-                })}
-            </div>
+            <DndProvider backend={TouchBackend} options={{}}>
+                <div style={this.styles()[".board-root"]}>
+                    {[0,1,2,3,4,5,6,7,8,9].map((row: number, rowIndex: number) => {
+                        return [0,1,2,3,4,5,6,7,8,9].map((col: number, colIndex: number) => {
+                            return this.generateCell(row, col, pieces, whiteToPlay, reversed);
+                        });
+                    })}
+                </div>
+            </DndProvider>
         )
     }
 
