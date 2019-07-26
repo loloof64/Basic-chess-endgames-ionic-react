@@ -1,7 +1,7 @@
 import { IonContent, IonHeader, IonTitle, IonToolbar} from '@ionic/react';
 import React, {Component} from 'react';
 
-import Chessboard from 'chessboardjsx';
+import Chessboard from '../components/Chessboard';
 
 interface ScreenDimensions {
   screenWidth: number;
@@ -18,11 +18,7 @@ class Home extends Component {
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-no-padding">
-          <Chessboard 
-            position="start" 
-            calcWidth={this.calculateSize}
-            boardStyle={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-          ></Chessboard>
+          <Chessboard></Chessboard>
         </IonContent>
       </>
     );
