@@ -28,6 +28,9 @@ export default class ChessBoard extends Component {
             if (col === 0 || col === 9) {
                 return this.generateRankCoordinate(row);
             }
+            else {
+                return this.generateRegularCell(row, col);
+            }
         }
         return (
             <div style={this.styles()[".empty-zone"]}></div>
@@ -42,6 +45,12 @@ export default class ChessBoard extends Component {
     private generateRankCoordinate = (row: number) => {
         const valueString = String.fromCharCode('1'.charCodeAt(0) + 8 - row);
         return (<div style={this.styles()[".coord"]}>{valueString}</div>);
+    }
+
+    private generateRegularCell = (row: number, col: number) => {
+        const isWhiteCell = (row + col) % 2 === 0;
+        const style = isWhiteCell ? this.styles()['.white-cell'] : this.styles()['.black-cell'];
+        return (<div style={style}></div>)
     }
 
     private styles = () => {
@@ -60,13 +69,25 @@ export default class ChessBoard extends Component {
                 'display': 'flex',
                 'justify-content': 'center',
                 'align-items': 'center',
-                'background-color': '#414CDA',
+                'background-color': '#120D48',
+            },
+            ".white-cell": {
+                'display': 'flex',
+                'justify-content': 'center',
+                'align-items': 'center',
+                'background-color': '#CA9326',
+            },
+            ".black-cell": {
+                'display': 'flex',
+                'justify-content': 'center',
+                'align-items': 'center',
+                'background-color': '#482D0D',
             },
             ".coord": {
                 'display': 'flex',
                 'justify-content': 'center',
                 'align-items': 'center',
-                'background-color': '#414CDA',
+                'background-color': '#120D48',
                 'color': '#DADF48',
                 'font-weight': 'bold',
                 'font-size': `${fontSize}px`, 
