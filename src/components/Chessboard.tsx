@@ -11,18 +11,43 @@ export default class ChessBoard extends Component {
             <div style={this.styles()[".board-root"]}>
                 {[0,1,2,3,4,5,6,7,8,9].map((row: number, rowIndex: number) => {
                     return [0,1,2,3,4,5,6,7,8,9].map((col: number, colIndex: number) => {
-                        return (
-                            <div style={this.styles()[".empty-zone"]}></div>
-                        );
+                        return this.generateCell(row, col);
                     });
                 })}
             </div>
         )
     }
 
+    private generateCell = (row: number, col: number) => {
+        if (row === 0 || row === 9) {
+            if (col >= 1 && col <= 8) {
+                return this.generateFileCoordinate(col);
+            }
+        }
+        else {
+            if (col === 0 || col === 9) {
+                return this.generateRankCoordinate(row);
+            }
+        }
+        return (
+            <div style={this.styles()[".empty-zone"]}></div>
+        );
+    }
+
+    private generateFileCoordinate = (col: number) => {
+        const valueString = String.fromCharCode('A'.charCodeAt(0) + col - 1);
+        return (<div style={this.styles()[".coord"]}>{valueString}</div>);
+    }
+
+    private generateRankCoordinate = (row: number) => {
+        const valueString = String.fromCharCode('1'.charCodeAt(0) + 8 - row);
+        return (<div style={this.styles()[".coord"]}>{valueString}</div>);
+    }
+
     private styles = () => {
         const size = this.props.size || 200;
         const sizeString = `${size}px`;
+        const fontSize = Math.ceil(size * 0.05);
 
         return {
             ".board-root": {
@@ -41,8 +66,10 @@ export default class ChessBoard extends Component {
                 'display': 'flex',
                 'justify-content': 'center',
                 'align-items': 'center',
+                'background-color': '#414CDA',
                 'color': '#DADF48',
                 'font-weight': 'bold',
+                'font-size': `${fontSize}px`, 
             },
             ".turn-white": {
                 'display': 'flex',
@@ -59,5 +86,5 @@ export default class ChessBoard extends Component {
                 'background-color': '#000',
             }
         };
-    } 
+    }
 }
