@@ -8,23 +8,25 @@ export default class ChessBoard extends Component {
         const position = this.props.position || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         const pieces = this.getPiecesFromPosition(position);
         const whiteToPlay = position.split(" ")[1] === 'w';
+        const reversed = this.props.reversed || false;
 
         return (
             <div style={this.styles()[".board-root"]}>
                 {[0,1,2,3,4,5,6,7,8,9].map((row: number, rowIndex: number) => {
                     return [0,1,2,3,4,5,6,7,8,9].map((col: number, colIndex: number) => {
-                        return this.generateCell(row, col, pieces, whiteToPlay);
+                        return this.generateCell(row, col, pieces, whiteToPlay, reversed);
                     });
                 })}
             </div>
         )
     }
 
-    private generateCell = (row: number, col: number, pieces: string[][], whiteToPlay: boolean) => {
+    private generateCell = (row: number, col: number, pieces: string[][],
+         whiteToPlay: boolean, reversed: boolean) => {
         const key = `${row}${col}`;
         if (row === 0 || row === 9) {
             if (col >= 1 && col <= 8) {
-                return this.generateFileCoordinate(key, col);
+                return this.generateFileCoordinate(key, col, reversed);
             }
             else if (row === 9 && col === 9) {
                 return this.generatePlayerTurn(key, whiteToPlay);
@@ -32,10 +34,10 @@ export default class ChessBoard extends Component {
         }
         else {
             if (col === 0 || col === 9) {
-                return this.generateRankCoordinate(key, row);
+                return this.generateRankCoordinate(key, row, reversed);
             }
             else {
-                return this.generateRegularCell(key, row, col, pieces);
+                return this.generateRegularCell(key, row, col, pieces, reversed);
             }
         }
         return (
@@ -43,20 +45,21 @@ export default class ChessBoard extends Component {
         );
     }
 
-    private generateFileCoordinate = (key: string, col: number) => {
-        const valueString = String.fromCharCode('A'.charCodeAt(0) + col - 1);
+    private generateFileCoordinate = (key: string, col: number, reversed: boolean) => {
+        const valueString = String.fromCharCode('A'.charCodeAt(0) + (reversed ? (8-col) : (col - 1)));
         return (<div key={key} style={this.styles()[".coord"]}>{valueString}</div>);
     }
 
-    private generateRankCoordinate = (key: string, row: number) => {
-        const valueString = String.fromCharCode('1'.charCodeAt(0) + 8 - row);
+    private generateRankCoordinate = (key: string, row: number, reversed: boolean) => {
+        const valueString = String.fromCharCode('1'.charCodeAt(0) + (reversed ? (row - 1) : (8 - row)));
         return (<div key={key} style={this.styles()[".coord"]}>{valueString}</div>);
     }
 
-    private generateRegularCell = (key: string, row: number, col: number, pieces: string[][]) => {
+    private generateRegularCell = (key: string, row: number, col: number, 
+        pieces: string[][], reversed: boolean) => {
         const isWhiteCell = (row + col) % 2 === 0;
         const style = isWhiteCell ? this.styles()['.white-cell'] : this.styles()['.black-cell'];
-        const value = pieces[row-1][col-1];
+        const value = pieces[reversed ? (8-row) : (row-1)][reversed ? (8-col) : (col-1)];
         const pieceElement = this.getPieceElement(value);
         return (<div key={key} style={style}>{pieceElement}</div>)
     }
