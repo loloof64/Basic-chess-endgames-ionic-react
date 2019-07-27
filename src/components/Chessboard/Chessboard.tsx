@@ -28,14 +28,19 @@ export default class Chessboard extends Component {
 
         return (
             <div style={{...this.props.style, ...this.styles()[".board-root"]}}>
-                {[0,1,2,3,4,5,6,7,8,9].map((row: number, rowIndex: number) => {
-                    return [0,1,2,3,4,5,6,7,8,9].map((col: number, colIndex: number) => {
-                        return this.generateCell(row, col, pieces, whiteToPlay, reversed);
+                {[0,1,2,3,4,5,6,7,8,9].map((row: number) => {
+                    return [0,1,2,3,4,5,6,7,8,9].map((col: number) => {
+                        return this.generateCell(row, col, whiteToPlay, reversed);
                     });
                 })}
                 {
                     this.generateDndEndCellGuides()
                 }
+                {[0,1,2,3,4,5,6,7].map((row: number) => {
+                    return [0,1,2,3,4,5,6,7].map((col: number) => {
+                        return this.generatePiece(`piece_${row}${col}`, row, col, pieces, reversed);
+                    });
+                })}
                 <div 
                     style={this.styles()[".board-interactive-layer"]}
                     onMouseDown={this.handleDragStart}
@@ -47,7 +52,7 @@ export default class Chessboard extends Component {
         )
     }
 
-    private generateCell = (row: number, col: number, pieces: string[][],
+    private generateCell = (row: number, col: number,
          whiteToPlay: boolean, reversed: boolean) => {
         const key = `${row}${col}`;
         if (row === 0 || row === 9) {
@@ -63,7 +68,7 @@ export default class Chessboard extends Component {
                 return this.generateRankCoordinate(key, row, reversed);
             }
             else {
-                return this.generateRegularCell(key, row, col, pieces, reversed);
+                return this.generateRegularCell(key, row, col, reversed);
             }
         }
         return (
@@ -82,7 +87,7 @@ export default class Chessboard extends Component {
     }
 
     private generateRegularCell = (key: string, row: number, col: number, 
-        pieces: string[][], reversed: boolean) => {
+        reversed: boolean) => {
         const isWhiteCell = (row + col) % 2 === 0;
         let style = isWhiteCell ? this.styles()['.white-cell'] : this.styles()['.black-cell'];
 
@@ -96,29 +101,7 @@ export default class Chessboard extends Component {
             style = this.styles()['.drag-end-cell']
         }
 
-        const value = pieces[reversed ? (8-row) : (row-1)][reversed ? (8-col) : (col-1)];
-        const piecePath = this.getPiecePath(value);
-
-        let pieceElement;
-        if (piecePath === undefined) {
-            pieceElement = undefined;
-        }
-        else {
-            const size = (this.props.size || 200) / 9.0
-            const sizeString = `${size}px`;
-
-            pieceElement = (
-                <img
-                    src={piecePath} 
-                    width={sizeString} 
-                    height={sizeString} 
-                    alt="piece"
-                >
-                </img>
-            )
-        }
-
-        return (<div key={key} style={style}>{pieceElement}</div>)
+        return (<div key={key} style={style}></div>)
     }
 
     private generatePlayerTurn(key: string, whiteToPlay: boolean) {
@@ -129,6 +112,42 @@ export default class Chessboard extends Component {
         )
     }
 
+    private generatePiece(key: string, row: number, col: number, pieces: string[][],
+        reversed: boolean) {
+        const value = pieces[reversed ? (7-row) : row][reversed ? (7-col) : col];
+        const piecePath = this.getPiecePath(value);
+
+        let pieceElement;
+        if (piecePath === undefined) {
+            pieceElement = undefined;
+        }
+        else {
+            const cellsSize = this.props.size / 9.0;
+            const sizeString = `${cellsSize}px`;
+
+            const left = cellsSize * (col + 0.5);
+            const top = cellsSize * (row + 0.5);
+
+            pieceElement = (
+                <img
+                    key={key}
+                    src={piecePath} 
+                    width={sizeString} 
+                    height={sizeString} 
+                    alt="piece"
+                    style={{
+                        'position': "absolute",
+                        'left': `${left}px`,
+                        'top': `${top}px`,
+                    }}
+                >
+                </img>
+            )
+        }
+
+        return pieceElement;
+    }
+
     private generateDndEndCellGuides() {
         const dndEndCellSelected = this.state.dragEnd !== undefined;
         if (dndEndCellSelected) {
@@ -136,8 +155,8 @@ export default class Chessboard extends Component {
             const thickness = cellsSize * 0.3;
             const length = this.props.size;
 
-            const horizontalTop = cellsSize * this.state.dragEnd.row - thickness * 0.5;
-            const verticalBottom = cellsSize * this.state.dragEnd.col - thickness * 0.5;
+            const horizontalTop = cellsSize * (this.state.dragEnd.row) - thickness * 0.5;
+            const verticalBottom = cellsSize * (this.state.dragEnd.col) - thickness * 0.5;
 
             const horizontalLine = (<div key='dnd_guide_horiz' style={{
                 'position': 'absolute',
