@@ -33,6 +33,9 @@ export default class Chessboard extends Component {
                         return this.generateCell(row, col, pieces, whiteToPlay, reversed);
                     });
                 })}
+                {
+                    this.generateDndEndCellGuides()
+                }
                 <div 
                     style={this.styles()[".board-interactive-layer"]}
                     onMouseDown={this.handleDragStart}
@@ -124,6 +127,41 @@ export default class Chessboard extends Component {
                 <div style={this.styles()[whiteToPlay ? '.turn-white' : '.turn-black']}></div>
             </div>
         )
+    }
+
+    private generateDndEndCellGuides() {
+        const dndEndCellSelected = this.state.dragEnd !== undefined;
+        if (dndEndCellSelected) {
+            const cellsSize = this.props.size / 9.0;
+            const thickness = cellsSize * 0.3;
+            const length = this.props.size;
+
+            const horizontalTop = cellsSize * this.state.dragEnd.row - thickness * 0.5;
+            const verticalBottom = cellsSize * this.state.dragEnd.col - thickness * 0.5;
+
+            const horizontalLine = (<div key='dnd_guide_horiz' style={{
+                'position': 'absolute',
+                'top': `${horizontalTop}px`,
+                'left': '0px',
+                'width': `${length}px`,
+                'height': `${thickness}px`,
+                'backgroundColor': '#5D30B0',
+            }}></div>);
+
+            const verticalLine = (<div key='dnd_guide_verti' style={{
+                'position': 'absolute',
+                'top': '0px',
+                'left': `${verticalBottom}px`,
+                'width': `${thickness}px`,
+                'height': `${length}px`,
+                'backgroundColor': '#5D30B0',
+            }}></div>);
+
+            return [
+                horizontalLine,
+                verticalLine,
+            ];
+        }
     }
 
     private getPiecePath = (value: any) => {
