@@ -223,6 +223,7 @@ export default class Chessboard extends Component {
                         'position': "absolute",
                         'left': `${left}px`,
                         'top': `${top}px`,
+                        'opacity': 0.7,
                     }}
                 >
                 </img>
@@ -283,8 +284,6 @@ export default class Chessboard extends Component {
             const allPiecesValues = this.getPiecesFromPosition(this.props.position);
             const rank = this.props.reversed ? (8-boardRawCoordinates.row) : boardRawCoordinates.row-1;
             const file = this.props.reversed ? (8-boardRawCoordinates.col) : boardRawCoordinates.col-1;
-
-            console.log(rank, file);
 
             const pieceValue = allPiecesValues[rank][file];
             this.setState({
