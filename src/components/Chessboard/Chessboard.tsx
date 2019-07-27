@@ -252,7 +252,12 @@ export default class Chessboard extends Component {
         const dndStarted = this.state.dragStart !== undefined;
         if (dndStarted) {
             const boardRawCoordinates = this.mouseEventToBoardRawCoordinate(event);
-            if (boardRawCoordinates !== undefined) {
+            const boardRawCoordinatesInBounds = 
+                boardRawCoordinates !== undefined &&
+                boardRawCoordinates.col >= 1 && boardRawCoordinates.col <= 8 &&
+                boardRawCoordinates.row >= 1 && boardRawCoordinates.row <= 8;
+                
+            if (boardRawCoordinatesInBounds) {
                 this.setState({
                     dragEnd: boardRawCoordinates,
                 })
