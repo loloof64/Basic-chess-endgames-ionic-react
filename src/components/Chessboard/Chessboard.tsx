@@ -1,6 +1,11 @@
 import React, { Component, CSSProperties, createRef } from "react";
 
-interface DragInformations {
+interface DragStartInformations {
+    col: number,
+    row: number,
+}
+
+interface DragEndInformations {
     col: number,
     row: number,
 }
@@ -11,7 +16,8 @@ export default class Chessboard extends Component {
     clickLayer = createRef<HTMLDivElement>();
 
     state = {
-        dragStart: undefined as DragInformations,
+        dragStart: undefined as DragStartInformations,
+        dragEnd: undefined as DragEndInformations,
     };
 
     render() {
@@ -31,6 +37,7 @@ export default class Chessboard extends Component {
                     style={this.styles()[".board-interactive-layer"]}
                     onMouseDown={this.handleDragStart}
                     onMouseUp={this.handleDragEnd}
+                    onMouseMove={this.handleDragMove}
                     ref={this.clickLayer}
                 ></div>
             </div>
@@ -75,10 +82,17 @@ export default class Chessboard extends Component {
         pieces: string[][], reversed: boolean) => {
         const isWhiteCell = (row + col) % 2 === 0;
         let style = isWhiteCell ? this.styles()['.white-cell'] : this.styles()['.black-cell'];
+
         const dragStart = this.state.dragStart;
         if (dragStart !== undefined && dragStart.col === col && dragStart.row === row){
             style = this.styles()['.drag-start-cell']
         }
+
+        const dragEnd = this.state.dragEnd;
+        if (dragEnd !== undefined && dragEnd.col === col && dragEnd.row === row){
+            style = this.styles()['.drag-end-cell']
+        }
+
         const value = pieces[reversed ? (8-row) : (row-1)][reversed ? (8-col) : (col-1)];
         const piecePath = this.getPiecePath(value);
 
@@ -160,6 +174,34 @@ export default class Chessboard extends Component {
     }
 
     private handleDragStart = (event: any) => {
+        const boardRawCoordinates = this.mouseEventToBoardRawCoordinate(event);
+        if (boardRawCoordinates !== undefined) {
+            this.setState({
+                dragStart: boardRawCoordinates,
+            })
+        }
+    }
+
+    private handleDragEnd = (event: any) => {
+        this.setState({
+            dragStart: undefined,
+            dragEnd: undefined,
+        })
+    }
+
+    private handleDragMove = (event: any) => {
+        const dndStarted = this.state.dragStart !== undefined;
+        if (dndStarted) {
+            const boardRawCoordinates = this.mouseEventToBoardRawCoordinate(event);
+            if (boardRawCoordinates !== undefined) {
+                this.setState({
+                    dragEnd: boardRawCoordinates,
+                })
+            }
+        }
+    }
+
+    private mouseEventToBoardRawCoordinate = (event: any) => {
         const cellSize = (this.props.size / 9.0);
         const halfCellSize = cellSize / 2.0;
         const clickLayer = this.clickLayer.current!;
@@ -170,18 +212,9 @@ export default class Chessboard extends Component {
             const col = Math.floor((event.clientX - clickLayerX - halfCellSize) / cellSize) + 1;
             const row = Math.floor((event.clientY - clickLayerY - halfCellSize) / cellSize) + 1;
 
-            this.setState({
-                dragStart: {
-                    col, row
-                }
-            })
+            return {col, row};
         }
-    }
-
-    private handleDragEnd = (event: any) => {
-        this.setState({
-            dragStart: undefined,
-        })
+        else return undefined;
     }
 
     private styles = () => {
@@ -222,6 +255,12 @@ export default class Chessboard extends Component {
                 'justifyContent': 'center',
                 'alignItems': 'center',
                 'backgroundColor': '#34DD34',
+            } as React.CSSProperties,
+            ".drag-end-cell": {
+                'display': 'flex',
+                'justifyContent': 'center',
+                'alignItems': 'center',
+                'backgroundColor': '#5D30B0',
             } as React.CSSProperties,
             ".coord": {
                 'display': 'flex',
