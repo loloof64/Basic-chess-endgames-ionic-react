@@ -3,6 +3,7 @@ import React, { Component, CSSProperties, createRef } from "react";
 interface DragStartInformations {
     col: number,
     row: number,
+    pieceValue: string,
 }
 
 interface DragEndInformations {
@@ -21,7 +22,7 @@ export default class Chessboard extends Component {
     };
 
     render() {
-        const position = this.props.position || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        const position = this.props.position;
         const pieces = this.getPiecesFromPosition(position);
         const whiteToPlay = position.split(" ")[1] === 'w';
         const reversed = this.props.reversed || false;
@@ -41,6 +42,9 @@ export default class Chessboard extends Component {
                         return this.generatePiece(`piece_${row}${col}`, row, col, pieces, reversed);
                     });
                 })}
+                {
+                    this.generateDndMovedPiece()
+                }
                 <div 
                     style={this.styles()[".board-interactive-layer"]}
                     onMouseDown={this.handleDragStart}
@@ -104,7 +108,7 @@ export default class Chessboard extends Component {
         return (<div key={key} style={style}></div>)
     }
 
-    private generatePlayerTurn(key: string, whiteToPlay: boolean) {
+    private generatePlayerTurn = (key: string, whiteToPlay: boolean) => {
         return (
             <div key={key} style={this.styles()['.empty-zone']}>
                 <div style={this.styles()[whiteToPlay ? '.turn-white' : '.turn-black']}></div>
@@ -112,8 +116,8 @@ export default class Chessboard extends Component {
         )
     }
 
-    private generatePiece(key: string, row: number, col: number, pieces: string[][],
-        reversed: boolean) {
+    private generatePiece = (key: string, row: number, col: number, pieces: string[][],
+        reversed: boolean) => {
         const value = pieces[reversed ? (7-row) : row][reversed ? (7-col) : col];
         const piecePath = this.getPiecePath(value);
 
@@ -148,7 +152,7 @@ export default class Chessboard extends Component {
         return pieceElement;
     }
 
-    private generateDndEndCellGuides() {
+    private generateDndEndCellGuides = () => {
         const dndEndCellSelected = this.state.dragEnd !== undefined;
         if (dndEndCellSelected) {
             const cellsSize = this.props.size / 9.0;
@@ -182,6 +186,38 @@ export default class Chessboard extends Component {
                 horizontalLine,
                 verticalLine,
             ];
+        }
+    }
+
+    private generateDndMovedPiece = () => {
+        const dndStarted = this.state.dragStart !== undefined;
+        const dragMoveStarted = this.state.dragEnd !== undefined;
+        if (dndStarted && dragMoveStarted) {
+            const dragStart = this.state.dragStart;
+            const dragEnd = this.state.dragEnd;
+            const piecePath = this.getPiecePath(dragStart.pieceValue);
+
+            const cellsSize = this.props.size / 9.0;
+            const sizeString = `${cellsSize}px`;
+
+            const left = cellsSize * (dragEnd.col - 0.5);
+            const top = cellsSize * (dragEnd.row - 0.5);
+
+            return (
+                <img
+                    key={`moved_piece`}
+                    src={piecePath} 
+                    width={sizeString} 
+                    height={sizeString} 
+                    alt="piece"
+                    style={{
+                        'position': "absolute",
+                        'left': `${left}px`,
+                        'top': `${top}px`,
+                    }}
+                >
+                </img>
+            )
         }
     }
 
@@ -235,8 +271,15 @@ export default class Chessboard extends Component {
     private handleDragStart = (event: any) => {
         const boardRawCoordinates = this.mouseEventToBoardRawCoordinate(event);
         if (boardRawCoordinates !== undefined) {
+            const allPiecesValues = this.getPiecesFromPosition(this.props.position);
+            const rank = this.props.reversed ? (7-boardRawCoordinates.row) : boardRawCoordinates.row;
+            const file = this.props.reversed ? (7-boardRawCoordinates.col) : boardRawCoordinates.col;
+            const pieceValue = allPiecesValues[rank+1][file+1];
             this.setState({
-                dragStart: boardRawCoordinates,
+                dragStart: {
+                    ...boardRawCoordinates,
+                    pieceValue,
+                }
             })
         }
     }
@@ -282,7 +325,7 @@ export default class Chessboard extends Component {
     }
 
     private styles = () => {
-        const size = this.props.size || 200;
+        const size = this.props.size;
         const sizeString = `${size}px`;
         const cellSizeString = `${size / 18.0}px`;
         const fontSize = Math.ceil(size * 0.05);
