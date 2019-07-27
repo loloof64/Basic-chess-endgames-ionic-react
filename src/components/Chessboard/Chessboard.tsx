@@ -1,4 +1,4 @@
-import React, { Component, CSSProperties, createRef } from "react";
+import React, { Component, createRef } from "react";
 
 interface DragStartInformations {
     col: number,
@@ -47,9 +47,9 @@ export default class Chessboard extends Component {
                 }
                 <div 
                     style={this.styles()[".board-interactive-layer"]}
-                    onMouseDown={this.handleDragStart}
-                    onMouseUp={this.handleDragEnd}
-                    onMouseMove={this.handleDragMove}
+                    onPointerDown={this.handleDragStart}
+                    onPointerUp={this.handleDragEnd}
+                    onPointerMove={this.handleDragMove}
                     ref={this.clickLayer}
                 ></div>
             </div>
@@ -279,6 +279,7 @@ export default class Chessboard extends Component {
     }
 
     private handleDragStart = (event: any) => {
+        event.preventDefault();
         const boardRawCoordinates = this.mouseEventToBoardRawCoordinate(event);
         if (boardRawCoordinates !== undefined) {
             const allPiecesValues = this.getPiecesFromPosition(this.props.position);
@@ -296,6 +297,7 @@ export default class Chessboard extends Component {
     }
 
     private handleDragEnd = (event: any) => {
+        event.preventDefault();
         this.setState({
             dragStart: undefined,
             dragEnd: undefined,
@@ -303,6 +305,7 @@ export default class Chessboard extends Component {
     }
 
     private handleDragMove = (event: any) => {
+        event.preventDefault();
         const dndStarted = this.state.dragStart !== undefined;
         if (dndStarted) {
             const boardRawCoordinates = this.mouseEventToBoardRawCoordinate(event);
