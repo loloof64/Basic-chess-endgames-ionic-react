@@ -122,7 +122,16 @@ export default class Chessboard extends Component {
         const piecePath = this.getPiecePath(value);
 
         let pieceElement;
-        if (piecePath === undefined) {
+        
+        const dndStart = this.state.dragStart;
+        const isDndStartCell = dndStart !== undefined &&
+            dndStart.col === col+1 &&
+            dndStart.row === row+1;
+
+        if (isDndStartCell) {
+            pieceElement = undefined;
+        }
+        else if (piecePath === undefined) {
             pieceElement = undefined;
         }
         else {
