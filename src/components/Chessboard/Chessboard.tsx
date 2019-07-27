@@ -281,9 +281,12 @@ export default class Chessboard extends Component {
         const boardRawCoordinates = this.mouseEventToBoardRawCoordinate(event);
         if (boardRawCoordinates !== undefined) {
             const allPiecesValues = this.getPiecesFromPosition(this.props.position);
-            const rank = this.props.reversed ? (7-boardRawCoordinates.row) : boardRawCoordinates.row;
-            const file = this.props.reversed ? (7-boardRawCoordinates.col) : boardRawCoordinates.col;
-            const pieceValue = allPiecesValues[rank+1][file+1];
+            const rank = this.props.reversed ? (8-boardRawCoordinates.row) : boardRawCoordinates.row-1;
+            const file = this.props.reversed ? (8-boardRawCoordinates.col) : boardRawCoordinates.col-1;
+
+            console.log(rank, file);
+
+            const pieceValue = allPiecesValues[rank][file];
             this.setState({
                 dragStart: {
                     ...boardRawCoordinates,
