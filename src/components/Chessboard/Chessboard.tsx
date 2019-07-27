@@ -1,8 +1,15 @@
-import React, { Component } from "react";
+import React, { Component, CSSProperties } from "react";
 
-export default class ChessBoard extends Component {
+export default class Chessboard extends Component {
 
     props: any;
+
+    state = {
+        dragStart: {
+            row: undefined,
+            col: undefined,
+        },
+    };
 
     render() {
         const position = this.props.position || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -11,12 +18,17 @@ export default class ChessBoard extends Component {
         const reversed = this.props.reversed || false;
 
         return (
-            <div style={this.styles()[".board-root"]}>
+            <div style={{...this.props.style, ...this.styles()[".board-root"]}}>
                 {[0,1,2,3,4,5,6,7,8,9].map((row: number, rowIndex: number) => {
                     return [0,1,2,3,4,5,6,7,8,9].map((col: number, colIndex: number) => {
                         return this.generateCell(row, col, pieces, whiteToPlay, reversed);
                     });
                 })}
+                <div 
+                    style={this.styles()[".board-interactive-layer"]}
+                    onMouseDown={this.handleDragStart}
+                    onMouseUp={this.handleDragEnd}
+                ></div>
             </div>
         )
     }
@@ -58,9 +70,33 @@ export default class ChessBoard extends Component {
     private generateRegularCell = (key: string, row: number, col: number, 
         pieces: string[][], reversed: boolean) => {
         const isWhiteCell = (row + col) % 2 === 0;
-        const style = isWhiteCell ? this.styles()['.white-cell'] : this.styles()['.black-cell'];
+        let style = isWhiteCell ? this.styles()['.white-cell'] : this.styles()['.black-cell'];
+        const dragStart = this.state.dragStart;
+        if (dragStart !== undefined && dragStart.col === col && dragStart.row === row){
+            style = this.styles()['.drag-start-cell']
+        }
         const value = pieces[reversed ? (8-row) : (row-1)][reversed ? (8-col) : (col-1)];
-        const pieceElement = this.getPieceElement(value);
+        const piecePath = this.getPiecePath(value);
+
+        let pieceElement;
+        if (piecePath === undefined) {
+            pieceElement = undefined;
+        }
+        else {
+            const size = (this.props.size || 200) / 9.0
+            const sizeString = `${size}px`;
+
+            pieceElement = (
+                <img
+                    src={piecePath} 
+                    width={sizeString} 
+                    height={sizeString} 
+                    alt="piece"
+                >
+                </img>
+            )
+        }
+
         return (<div key={key} style={style}>{pieceElement}</div>)
     }
 
@@ -72,7 +108,7 @@ export default class ChessBoard extends Component {
         )
     }
 
-    private getPieceElement = (value: any) => {
+    private getPiecePath = (value: any) => {
         let typeString;
         switch (value) {
             case 'P': typeString = 'pl'; break;
@@ -89,10 +125,7 @@ export default class ChessBoard extends Component {
             case 'k': typeString = 'kd'; break;
             default: return undefined;
         }
-        const url = `/assets/vectors/Chess_${typeString}t45.svg`;
-        const size = (this.props.size || 200) / 9.0
-        const sizeString = `${size}px`;
-        return (<img src={url} width={sizeString} height={sizeString} alt="piece"></img>)
+        return `/assets/vectors/Chess_${typeString}t45.svg`;
     }
 
     private getPiecesFromPosition = (position: string) => {
@@ -122,6 +155,27 @@ export default class ChessBoard extends Component {
         });
     }
 
+    private handleDragStart = (event: any) => {
+        const cellSize = (this.props.size / 9.0);
+        const halfCellSize = cellSize / 2.0;
+        const col = Math.floor((event.pageX - halfCellSize) / cellSize);
+        const row = Math.floor((event.pageY - halfCellSize) / cellSize);
+
+        console.log(col, row);
+
+        this.setState({
+            dragStart: {
+                col, row
+            }
+        })
+    }
+
+    private handleDragEnd = (event: any) => {
+        this.setState({
+            dragStart: undefined,
+        })
+    }
+
     private styles = () => {
         const size = this.props.size || 200;
         const sizeString = `${size}px`;
@@ -134,31 +188,42 @@ export default class ChessBoard extends Component {
                 'gridTemplate': '1fr repeat(8, 2fr) 1fr / 1fr repeat(8, 2fr) 1fr',
                 'width': sizeString,
                 'height': sizeString,
-            },
+            } as React.CSSProperties,
+            ".board-interactive-layer": {
+                position: 'absolute',
+                'width': sizeString,
+                'height': sizeString,
+            } as React.CSSProperties,
             ".empty-zone": {
                 'backgroundColor': '#120D48',
-            },
+            } as React.CSSProperties,
             ".white-cell": {
                 'display': 'flex',
                 'justifyContent': 'center',
                 'alignItems': 'center',
                 'backgroundColor': '#CA9326',
-            },
+            } as React.CSSProperties,
             ".black-cell": {
                 'display': 'flex',
                 'justifyContent': 'center',
                 'alignItems': 'center',
                 'backgroundColor': '#482D0D',
-            },
+            } as React.CSSProperties,
+            ".drag-start-cell": {
+                'display': 'flex',
+                'justifyContent': 'center',
+                'alignItems': 'center',
+                'backgroundColor': '#34DD34',
+            } as React.CSSProperties,
             ".coord": {
                 'display': 'flex',
                 'justifyContent': 'center',
                 'alignItems': 'center',
                 'backgroundColor': '#120D48',
                 'color': '#DADF48',
-                'fontWeight': 800,
+                'fontWeight': 'bold',
                 'fontSize': `${fontSize}px`, 
-            },
+            } as React.CSSProperties,
             ".turn-white": {
                 'display': 'flex',
                 'justifyContent': 'center',
@@ -176,7 +241,7 @@ export default class ChessBoard extends Component {
                 'backgroundColor': '#000',
                 'width': cellSizeString,
                 'height': cellSizeString,
-            }
-        };
+            } as React.CSSProperties,
+        }
     }
 }

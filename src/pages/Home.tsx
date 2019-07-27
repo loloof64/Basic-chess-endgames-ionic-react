@@ -18,7 +18,11 @@ class Home extends Component {
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-no-padding">
-          <Chessboard size={400} reversed={true}
+          <Chessboard size={400} reversed={true} style={{
+            position: 'absolute',
+            top: '50%', left: '32%',
+            transform: 'translate(-32%, -50%)'
+          }}
           position="rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
 "></Chessboard>
         </IonContent>
