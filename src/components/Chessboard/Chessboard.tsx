@@ -1,14 +1,17 @@
-import React, { Component, CSSProperties } from "react";
+import React, { Component, CSSProperties, createRef } from "react";
+
+interface DragInformations {
+    col: number,
+    row: number,
+}
 
 export default class Chessboard extends Component {
 
     props: any;
+    clickLayer = createRef<HTMLDivElement>();
 
     state = {
-        dragStart: {
-            row: undefined,
-            col: undefined,
-        },
+        dragStart: undefined as DragInformations,
     };
 
     render() {
@@ -28,6 +31,7 @@ export default class Chessboard extends Component {
                     style={this.styles()[".board-interactive-layer"]}
                     onMouseDown={this.handleDragStart}
                     onMouseUp={this.handleDragEnd}
+                    ref={this.clickLayer}
                 ></div>
             </div>
         )
@@ -158,16 +162,20 @@ export default class Chessboard extends Component {
     private handleDragStart = (event: any) => {
         const cellSize = (this.props.size / 9.0);
         const halfCellSize = cellSize / 2.0;
-        const col = Math.floor((event.pageX - halfCellSize) / cellSize);
-        const row = Math.floor((event.pageY - halfCellSize) / cellSize);
+        const clickLayer = this.clickLayer.current!;
+        if (clickLayer) {
+            const clickLayerBoundingRect = clickLayer.getBoundingClientRect();
+            const clickLayerX = clickLayerBoundingRect.left;
+            const clickLayerY = clickLayerBoundingRect.top;
+            const col = Math.floor((event.clientX - clickLayerX - halfCellSize) / cellSize) + 1;
+            const row = Math.floor((event.clientY - clickLayerY - halfCellSize) / cellSize) + 1;
 
-        console.log(col, row);
-
-        this.setState({
-            dragStart: {
-                col, row
-            }
-        })
+            this.setState({
+                dragStart: {
+                    col, row
+                }
+            })
+        }
     }
 
     private handleDragEnd = (event: any) => {
