@@ -153,15 +153,17 @@ export default class Chessboard extends Component {
         if (dndEndCellSelected) {
             const cellsSize = this.props.size / 9.0;
             const thickness = cellsSize * 0.3;
-            const length = this.props.size;
+            const length = cellsSize * 8;
 
             const horizontalTop = cellsSize * (this.state.dragEnd.row) - thickness * 0.5;
-            const verticalBottom = cellsSize * (this.state.dragEnd.col) - thickness * 0.5;
+            const horizontalLeft = cellsSize * 0.5;
+            const verticalLeft = cellsSize * (this.state.dragEnd.col) - thickness * 0.5;
+            const verticalTop = cellsSize * 0.5;
 
             const horizontalLine = (<div key='dnd_guide_horiz' style={{
                 'position': 'absolute',
                 'top': `${horizontalTop}px`,
-                'left': '0px',
+                'left': `${horizontalLeft}px`,
                 'width': `${length}px`,
                 'height': `${thickness}px`,
                 'backgroundColor': '#5D30B0',
@@ -169,8 +171,8 @@ export default class Chessboard extends Component {
 
             const verticalLine = (<div key='dnd_guide_verti' style={{
                 'position': 'absolute',
-                'top': '0px',
-                'left': `${verticalBottom}px`,
+                'top': `${verticalTop}px`,
+                'left': `${verticalLeft}px`,
                 'width': `${thickness}px`,
                 'height': `${length}px`,
                 'backgroundColor': '#5D30B0',
