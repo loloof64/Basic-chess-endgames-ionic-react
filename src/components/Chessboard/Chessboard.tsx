@@ -342,7 +342,7 @@ export default class Chessboard extends Component {
         const size = this.props.size;
         const sizeString = `${size}px`;
         const cellSizeString = `${size / 18.0}px`;
-        const fontSize = Math.ceil(size * 0.05);
+        const fontSize = Math.ceil(size * 0.02);
 
         return {
             ".board-root": {
