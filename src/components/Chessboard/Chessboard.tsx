@@ -344,6 +344,7 @@ moveValidator: (start: DragMoveStart, end: DragMoveEnd, piece: string) => void}>
             const dragStart = {
                 file: this.props.reversed ? 7-this.state.dragStart.col : this.state.dragStart.col,
                 rank: this.props.reversed ? this.state.dragStart.row : 7-this.state.dragStart.row,
+                piece: this.state.dragStart.pieceValue,
             };
             const dragEnd = {
                 file: this.props.reversed ? 7-this.state.dragEnd.col : this.state.dragEnd.col,
