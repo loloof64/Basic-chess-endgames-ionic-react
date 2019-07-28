@@ -321,7 +321,8 @@ export default class Chessboard extends Component<{position: string, reversed: b
                     dragStart: {
                         ...boardRawCoordinates,
                         pieceValue,
-                    }
+                    },
+                    dragEnd: boardRawCoordinates,
                 })
             }
         }
