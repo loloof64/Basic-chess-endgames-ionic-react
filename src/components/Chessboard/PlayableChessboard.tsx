@@ -32,6 +32,7 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
             whitePlayer={this.state.gameLogic.turn() !== 'b'}
             isOpen={this.state.promotionModalOpen}
             callback={this.handlePromotionValidation}
+            dismissCallback={this.handleModalDismiss}
         ></PromotionDialogModal>
         </>);
     }
@@ -83,6 +84,13 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
             pendingMove: undefined,
             gameLogic: gameLogicCopy,
         })
+    }
+
+    private handleModalDismiss = () => {
+        this.setState({
+            promotionModalOpen: false,
+            pendingMove: undefined,
+        });
     }
 
     private isPromotionMove = (start: DragMoveStart, end: DragMoveEnd) => {

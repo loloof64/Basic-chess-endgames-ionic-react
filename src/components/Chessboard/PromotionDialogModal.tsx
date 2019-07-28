@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { IonModal, IonGrid, IonRow, IonCol, IonButton, IonImg } from '@ionic/react';
 
 export default class PromotionDialogModal extends Component<{whitePlayer: boolean, isOpen: boolean, 
-    callback: (pieceType: string) => void}> {
+    callback: (pieceType: string) => void, dismissCallback: () => void}> {
 
     render() {
         const message = 'Please select the promotion piece:';
 
         return (
-            <IonModal isOpen={this.props.isOpen}>
+            <IonModal isOpen={this.props.isOpen} 
+            onDidDismiss={this.props.dismissCallback}>
                 <IonGrid>
                     <IonRow>
                         <IonCol>
