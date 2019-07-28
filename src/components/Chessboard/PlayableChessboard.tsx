@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Chessboard from './Chessboard';
+const Chess = require('chess.js');
 
 export default class PlayableChessboard extends Component<{reversed: boolean, size: number, style: object}> {
     state = {
-        position: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+        gameLogic: new Chess(),
     }
 
     render() {
@@ -12,7 +13,7 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
             style={this.props.style}
             size={this.props.size}
             reversed={this.props.reversed}
-            position={this.state.position}
+            position={this.state.gameLogic.fen()}
         ></Chessboard>);
     }
 }
