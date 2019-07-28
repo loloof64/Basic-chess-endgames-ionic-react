@@ -17,7 +17,8 @@ interface DragEndInformations {
     row: number,
 }
 
-export default class Chessboard extends Component<{position: string, reversed: boolean, size: number, style: object,
+export default class Chessboard extends Component<{position: string, reversed: boolean,
+     size: number, style: object, gameInProgress: boolean,
 moveValidator: (start: DragMoveStart, end: DragMoveEnd, piece: string) => void}> {
 
     clickLayer = createRef<HTMLDivElement>();
@@ -302,6 +303,11 @@ moveValidator: (start: DragMoveStart, end: DragMoveEnd, piece: string) => void}>
     private handleDragStart = (event: any) => {
         event.preventDefault();
         event.stopPropagation();
+
+        if ( ! this.props.gameInProgress ) {
+            return;
+        }
+
         const boardRawCoordinates = this.touchEventToBoardRawCoordinate(event);
 
         if (boardRawCoordinates !== undefined) {

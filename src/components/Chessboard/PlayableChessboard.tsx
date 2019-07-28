@@ -21,6 +21,7 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
         pendingMove: undefined as PendingMove,
         showGameEndedToast: false,
         gameEndedMessage: undefined as string,
+        gameInProgress: true,
     }
 
     render() {
@@ -32,6 +33,7 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
                 reversed={this.props.reversed}
                 position={this.state.gameLogic.fen()}
                 moveValidator={this.handleMove}
+                gameInProgress={this.state.gameInProgress}
             ></Chessboard>
             <PromotionDialogModal
                 whitePlayer={this.state.gameLogic.turn() !== 'b'}
@@ -130,6 +132,7 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
             this.setState({
                 showGameEndedToast: true,
                 gameEndedMessage: message,
+                gameInProgress: false,
             });
         }
         else if (isDrawByStalemate) {
@@ -137,6 +140,7 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
             this.setState({
                 showGameEndedToast: true,
                 gameEndedMessage: message,
+                gameInProgress: false,
             });
         }
         else if (isDrawByThreeFoldRepetitions) {
@@ -144,6 +148,7 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
             this.setState({
                 showGameEndedToast: true,
                 gameEndedMessage: message,
+                gameInProgress: false,
             });
         }
         else if (isDrawByInsufficientMaterial) {
@@ -151,6 +156,7 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
             this.setState({
                 showGameEndedToast: true,
                 gameEndedMessage: message,
+                gameInProgress: false,
             });
         }
         else if (isDrawByFiftyMovesRule) {
@@ -158,6 +164,7 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
             this.setState({
                 showGameEndedToast: true,
                 gameEndedMessage: message,
+                gameInProgress: false,
             });
         }
     }
