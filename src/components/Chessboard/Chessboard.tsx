@@ -335,6 +335,11 @@ moveValidator: (start: DragMoveStart, end: DragMoveEnd, piece: string) => void}>
         event.preventDefault();
         event.stopPropagation();
 
+        const dndStarted = this.state.dragStart !== undefined && this.state.dragEnd !== undefined;
+        if (! dndStarted) {
+            return;
+        }
+
         if (this.props.moveValidator) {
             const dragStart = {
                 file: this.props.reversed ? 7-this.state.dragStart.col : this.state.dragStart.col,
@@ -361,7 +366,7 @@ moveValidator: (start: DragMoveStart, end: DragMoveEnd, piece: string) => void}>
     private handleDragMove = (event: any) => {
         event.preventDefault();
         event.stopPropagation();
-        const dndStarted = this.state.dragStart !== undefined;
+        const dndStarted = this.state.dragStart !== undefined && this.state.dragEnd !== undefined;
         if (dndStarted) {
             const boardRawCoordinates = this.touchEventToBoardRawCoordinate(event);
             const boardRawCoordinatesInBounds = 

@@ -40,7 +40,7 @@ class Home extends Component {
               top: '50%', left: '50%',
               transform: 'translate(-50%, -50%)'
             }}
-            reversed={true}
+            reversed={false}
           ></PlayableChessboard>
         </IonContent>
       </>
