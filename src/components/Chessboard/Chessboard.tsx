@@ -3,6 +3,8 @@ import ChessboardEmptyCell from './ChessboardEmptyCell';
 import ChessboardCell from './ChessboardCell';
 import ChessboardCoord from './ChessboardCoord';
 import ChessboardPlayerTurn from './ChessboardPlayerTurn';
+import DragMoveStart from './DragMoveStart';
+import DragMoveEnd from './DragMoveEnd';
 
 interface DragStartInformations {
     col: number,
@@ -15,7 +17,8 @@ interface DragEndInformations {
     row: number,
 }
 
-export default class Chessboard extends Component<{position: string, reversed: boolean, size: number, style: object}> {
+export default class Chessboard extends Component<{position: string, reversed: boolean, size: number, style: object,
+moveValidator: (start: DragMoveStart, end: DragMoveEnd, piece: string) => void}> {
 
     clickLayer = createRef<HTMLDivElement>();
 
@@ -331,6 +334,24 @@ export default class Chessboard extends Component<{position: string, reversed: b
     private handleDragEnd = (event: any) => {
         event.preventDefault();
         event.stopPropagation();
+
+        if (this.props.moveValidator) {
+            const dragStart = {
+                file: this.props.reversed ? 7-this.state.dragStart.col : this.state.dragStart.col,
+                rank: this.props.reversed ? this.state.dragStart.row : 7-this.state.dragStart.row,
+            };
+            const dragEnd = {
+                file: this.props.reversed ? 7-this.state.dragEnd.col : this.state.dragEnd.col,
+                rank: this.props.reversed ? this.state.dragEnd.row : 7-this.state.dragEnd.row,
+            }
+
+            const pieceValue = this.state.dragStart.pieceValue;
+
+            this.props.moveValidator(dragStart, dragEnd, pieceValue);
+        }
+
+        
+        
         this.setState({
             dragStart: undefined,
             dragEnd: undefined,
