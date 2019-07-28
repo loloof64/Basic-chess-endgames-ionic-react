@@ -301,6 +301,8 @@ export default class Chessboard extends Component<{position: string, reversed: b
         event.stopPropagation();
         const boardRawCoordinates = this.touchEventToBoardRawCoordinate(event);
 
+        console.log('coordinates', boardRawCoordinates);
+
         if (boardRawCoordinates !== undefined) {
             const allPiecesValues = this.getPiecesFromPosition(this.props.position);
             const rank = this.props.reversed ? (7-boardRawCoordinates.row) : boardRawCoordinates.row;

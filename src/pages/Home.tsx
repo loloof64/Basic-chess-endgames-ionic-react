@@ -1,7 +1,7 @@
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/react';
 import React, {Component} from 'react';
 
-import Chessboard from '../components/Chessboard/Chessboard';
+import PlayableChessboard from '../components/Chessboard/PlayableChessboard';
 
 class Home extends Component {
 
@@ -33,12 +33,15 @@ class Home extends Component {
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-no-padding">
-          <Chessboard size={size} style={{
-            position: 'absolute',
-            top: '50%', left: '50%',
-            transform: 'translate(-50%, -50%)'
-          }}
-          position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" reversed={true}></Chessboard>
+          <PlayableChessboard 
+            size={size} 
+            style={{
+              position: 'absolute',
+              top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}
+            reversed={true}
+          ></PlayableChessboard>
         </IonContent>
       </>
     );
