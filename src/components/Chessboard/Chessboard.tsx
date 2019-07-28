@@ -15,9 +15,8 @@ interface DragEndInformations {
     row: number,
 }
 
-export default class Chessboard extends Component {
+export default class Chessboard extends Component<{position: string, reversed: boolean, size: number, style: object}> {
 
-    props: any;
     clickLayer = createRef<HTMLDivElement>();
 
     state = {
