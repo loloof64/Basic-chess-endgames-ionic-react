@@ -342,6 +342,13 @@ export default class Chessboard extends Component {
                     dragEnd: boardRawCoordinates,
                 })
             }
+            else {
+                // cancel drag n drop
+                this.setState({
+                    dragStart: undefined,
+                    dragEnd: undefined,
+                })
+            }
         }
     }
 
