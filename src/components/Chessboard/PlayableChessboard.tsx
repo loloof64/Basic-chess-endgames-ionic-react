@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import { IonToast } from '@ionic/react';
 import Chessboard from './Chessboard';
 import DragMoveStart from './DragMoveStart';
 import DragMoveEnd from './DragMoveEnd';
 import PromotionDialogModal from './PromotionDialogModal';
+import { bool } from 'prop-types';
+import { cpus } from 'os';
 
 const Chess = require('chess.js');
 
@@ -16,24 +19,32 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
         gameLogic: new Chess(),
         promotionModalOpen: false,
         pendingMove: undefined as PendingMove,
+        showGameEndedToast: false,
+        gameEndedMessage: undefined as string,
     }
 
     render() {
         return (
         <>
-        <Chessboard
-            style={this.props.style}
-            size={this.props.size}
-            reversed={this.props.reversed}
-            position={this.state.gameLogic.fen()}
-            moveValidator={this.handleMove}
-        ></Chessboard>
-        <PromotionDialogModal
-            whitePlayer={this.state.gameLogic.turn() !== 'b'}
-            isOpen={this.state.promotionModalOpen}
-            callback={this.handlePromotionValidation}
-            dismissCallback={this.handleModalDismiss}
-        ></PromotionDialogModal>
+            <Chessboard
+                style={this.props.style}
+                size={this.props.size}
+                reversed={this.props.reversed}
+                position={this.state.gameLogic.fen()}
+                moveValidator={this.handleMove}
+            ></Chessboard>
+            <PromotionDialogModal
+                whitePlayer={this.state.gameLogic.turn() !== 'b'}
+                isOpen={this.state.promotionModalOpen}
+                callback={this.handlePromotionValidation}
+                dismissCallback={this.handleModalDismiss}
+            ></PromotionDialogModal>
+            <IonToast
+                isOpen={this.state.showGameEndedToast}
+                onDidDismiss={this.handleGameEndedToastDismiss}
+                message={this.state.gameEndedMessage}
+                duration={800}
+            ></IonToast>
         </>);
     }
 
@@ -61,6 +72,8 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
                 position: gameLogicCopy.fen(),
                 gameLogic: gameLogicCopy,
             });
+
+            this.notifyGameEndedIfAppropriate();
         }
     }
 
@@ -84,6 +97,8 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
             pendingMove: undefined,
             gameLogic: gameLogicCopy,
         })
+
+        this.notifyGameEndedIfAppropriate();
     }
 
     private handleModalDismiss = () => {
@@ -98,5 +113,59 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
         const isBlackPawn = start.piece === 'p';
 
         return (isWhitePawn && end.rank === 7) || (isBlackPawn && end.rank === 0); 
+    }
+
+    private notifyGameEndedIfAppropriate = () => {
+        const isMate = this.state.gameLogic.in_checkmate();
+        const isDrawByStalemate = this.state.gameLogic.in_stalemate();
+        const isDrawByThreeFoldRepetitions = this.state.gameLogic.in_threefold_repetition();
+        const isDrawByInsufficientMaterial = this.state.gameLogic.insufficient_material();
+        const isDrawByFiftyMovesRule = 
+            this.state.gameLogic.in_draw() &&
+            ! this.state.gameLogic.insufficient_material();
+
+        if (isMate) {
+            const whiteWinner = this.state.gameLogic.turn() === 'b';
+            const message = `The ${whiteWinner ? 'Whites' : 'Blacks'} wins !`;
+            this.setState({
+                showGameEndedToast: true,
+                gameEndedMessage: message,
+            });
+        }
+        else if (isDrawByStalemate) {
+            const message = 'Draw by stalemate';
+            this.setState({
+                showGameEndedToast: true,
+                gameEndedMessage: message,
+            });
+        }
+        else if (isDrawByThreeFoldRepetitions) {
+            const message = 'Draw by three fold repetitions';
+            this.setState({
+                showGameEndedToast: true,
+                gameEndedMessage: message,
+            });
+        }
+        else if (isDrawByInsufficientMaterial) {
+            const message = 'Draw by insufficient material';
+            this.setState({
+                showGameEndedToast: true,
+                gameEndedMessage: message,
+            });
+        }
+        else if (isDrawByFiftyMovesRule) {
+            const message = 'Draw by 50 moves rule';
+            this.setState({
+                showGameEndedToast: true,
+                gameEndedMessage: message,
+            });
+        }
+    }
+
+    private handleGameEndedToastDismiss = () => {
+        this.setState({
+            showGameEndedToast: false,
+            gameEndedMessage: undefined,
+        });
     }
 }
