@@ -46,7 +46,7 @@ export default class Chessboard extends Component<{position: string, reversed: b
 
                 {[0,1,2,3,4,5,6,7].map((row: number) => {
                     const rankCoordBase = reversed ? '1' : '8';
-                    const rankCoord = String.fromCharCode(rankCoordBase.charCodeAt(0) + row);
+                    const rankCoord = String.fromCharCode(rankCoordBase.charCodeAt(0) + (reversed ? row : -row) );
 
                     return (
                         <React.Fragment key={row}>
