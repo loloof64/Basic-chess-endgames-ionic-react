@@ -309,7 +309,15 @@ export default class Chessboard extends Component {
 
             const pieceValue = allPiecesValues[rank][file];
             const isLegalPieceValue = 'PNBRQKpnbrqk'.split('').includes(pieceValue);
-            if (isLegalPieceValue){
+
+            if ( ! isLegalPieceValue ) return;
+
+            const isWhiteToPlay = this.props.position.split(' ')[1] === 'w';
+            const isPieceOfPlayerTurn = isWhiteToPlay ?
+                (pieceValue.charCodeAt(0) >= 'A'.charCodeAt(0) && pieceValue.charCodeAt(0) <= 'Z'.charCodeAt(0)) :
+                (pieceValue.charCodeAt(0) >= 'a'.charCodeAt(0) && pieceValue.charCodeAt(0) <= 'z'.charCodeAt(0));
+
+            if (isPieceOfPlayerTurn){
                 this.setState({
                     dragStart: {
                         ...boardRawCoordinates,
