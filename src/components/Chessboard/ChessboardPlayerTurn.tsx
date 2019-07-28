@@ -5,7 +5,7 @@ export default class ChessboardPlayerTurn extends Component<{whiteToPlay: boolea
     cellSize: number;
 
     shouldComponentUpdate(nextProps: any) {
-        const whiteToPlayChanged = this.props.whiteToPlay === nextProps.whiteToPlay;
+        const whiteToPlayChanged = this.props.whiteToPlay !== nextProps.whiteToPlay;
         const cellSizeChanged = this.props.cellSize !== nextProps.cellSize;
 
         return whiteToPlayChanged || cellSizeChanged;
