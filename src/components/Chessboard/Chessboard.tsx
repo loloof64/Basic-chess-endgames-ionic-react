@@ -50,7 +50,7 @@ export default class Chessboard extends Component {
                     const rankCoord = String.fromCharCode(rankCoordBase.charCodeAt(0) + row);
 
                     return (
-                        <>
+                        <React.Fragment key={row}>
                             <ChessboardCoord key_value={`${7-row}_left`} value={rankCoord} cellSize={cellSize}></ChessboardCoord>
                             <ChessboardCell key_value={`${7-row}0`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
                             <ChessboardCell key_value={`${7-row}1`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
@@ -61,7 +61,7 @@ export default class Chessboard extends Component {
                             <ChessboardCell key_value={`${7-row}6`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
                             <ChessboardCell key_value={`${7-row}7`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
                             <ChessboardCoord key_value={`${7-row}_right`} value={rankCoord} cellSize={cellSize}></ChessboardCoord>
-                        </>
+                        </React.Fragment>
                     );
                 })}
 
