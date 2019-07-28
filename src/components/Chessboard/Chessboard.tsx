@@ -308,12 +308,15 @@ export default class Chessboard extends Component {
             const file = this.props.reversed ? (7-boardRawCoordinates.col) : boardRawCoordinates.col;
 
             const pieceValue = allPiecesValues[rank][file];
-            this.setState({
-                dragStart: {
-                    ...boardRawCoordinates,
-                    pieceValue,
-                }
-            })
+            const isLegalPieceValue = 'PNBRQKpnbrqk'.split('').includes(pieceValue);
+            if (isLegalPieceValue){
+                this.setState({
+                    dragStart: {
+                        ...boardRawCoordinates,
+                        pieceValue,
+                    }
+                })
+            }
         }
     }
 
