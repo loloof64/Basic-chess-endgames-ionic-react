@@ -52,14 +52,38 @@ export default class Chessboard extends Component {
                     return (
                         <React.Fragment key={row}>
                             <ChessboardCoord key_value={`${7-row}_left`} value={rankCoord} cellSize={cellSize}></ChessboardCoord>
-                            <ChessboardCell key_value={`${7-row}0`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
-                            <ChessboardCell key_value={`${7-row}1`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
-                            <ChessboardCell key_value={`${7-row}2`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
-                            <ChessboardCell key_value={`${7-row}3`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
-                            <ChessboardCell key_value={`${7-row}4`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
-                            <ChessboardCell key_value={`${7-row}5`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
-                            <ChessboardCell key_value={`${7-row}6`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
-                            <ChessboardCell key_value={`${7-row}7`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}0`} whiteCell={(row % 2) === 0} size={cellSize} 
+                                isDndStartCell={this.isDndStartCell(row, 0)}
+                                isDndEndCell={this.isDndEndCell(row, 0)}
+                            ></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}1`} whiteCell={(row % 2) !== 0} size={cellSize} 
+                                isDndStartCell={this.isDndStartCell(row, 1)}
+                                isDndEndCell={this.isDndEndCell(row, 1)}
+                            ></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}2`} whiteCell={(row % 2) === 0} size={cellSize} 
+                                isDndStartCell={this.isDndStartCell(row, 2)}
+                                isDndEndCell={this.isDndEndCell(row, 2)}
+                            ></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}3`} whiteCell={(row % 2) !== 0} size={cellSize} 
+                                isDndStartCell={this.isDndStartCell(row, 3)}
+                                isDndEndCell={this.isDndEndCell(row, 3)}
+                            ></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}4`} whiteCell={(row % 2) === 0} size={cellSize} 
+                                isDndStartCell={this.isDndStartCell(row, 4)}
+                                isDndEndCell={this.isDndEndCell(row, 4)}
+                            ></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}5`} whiteCell={(row % 2) !== 0} size={cellSize} 
+                                isDndStartCell={this.isDndStartCell(row, 5)}
+                                isDndEndCell={this.isDndEndCell(row, 5)}
+                            ></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}6`} whiteCell={(row % 2) === 0} size={cellSize} 
+                                isDndStartCell={this.isDndStartCell(row, 6)}
+                                isDndEndCell={this.isDndEndCell(row, 6)}
+                            ></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}7`} whiteCell={(row % 2) !== 0} size={cellSize} 
+                                isDndStartCell={this.isDndStartCell(row, 7)}
+                                isDndEndCell={this.isDndEndCell(row, 7)}
+                            ></ChessboardCell>
                             <ChessboardCoord key_value={`${7-row}_right`} value={rankCoord} cellSize={cellSize}></ChessboardCoord>
                         </React.Fragment>
                     );
@@ -90,13 +114,25 @@ export default class Chessboard extends Component {
                 }
                 <div 
                     style={this.styles()[".board-interactive-layer"]}
-                    onPointerDown={this.handleDragStart}
-                    onPointerUp={this.handleDragEnd}
-                    onPointerMove={this.handleDragMove}
+                    onTouchStart={this.handleDragStart}
+                    onTouchMove={this.handleDragMove}
+                    onTouchEnd={this.handleDragEnd}
                     ref={this.clickLayer}
                 ></div>
             </div>
         )
+    }
+
+    private isDndStartCell = (row: number, col: number) => {
+        const dndStart = this.state.dragStart;
+        if (dndStart === undefined) return false;
+        return row === dndStart.row && col === dndStart.col;
+    }
+
+    private isDndEndCell = (row: number, col: number) => {
+        const dndEnd = this.state.dragEnd;
+        if (dndEnd === undefined) return false;
+        return row === dndEnd.row && col === dndEnd.col;
     }
 
     private generatePiece = (key: string, row: number, col: number, pieces: string[][],
@@ -108,8 +144,8 @@ export default class Chessboard extends Component {
         
         const dndStart = this.state.dragStart;
         const isDndStartCell = dndStart !== undefined &&
-            dndStart.col === col+1 &&
-            dndStart.row === row+1;
+            dndStart.col === col &&
+            dndStart.row === row;
 
         if (isDndStartCell) {
             pieceElement = undefined;
@@ -151,9 +187,9 @@ export default class Chessboard extends Component {
             const thickness = cellsSize * 0.3;
             const length = cellsSize * 8;
 
-            const horizontalTop = cellsSize * (this.state.dragEnd.row) - thickness * 0.5;
+            const horizontalTop = cellsSize * (this.state.dragEnd.row+1) - thickness * 0.5;
             const horizontalLeft = cellsSize * 0.5;
-            const verticalLeft = cellsSize * (this.state.dragEnd.col) - thickness * 0.5;
+            const verticalLeft = cellsSize * (this.state.dragEnd.col+1) - thickness * 0.5;
             const verticalTop = cellsSize * 0.5;
 
             const horizontalLine = (<div key='dnd_guide_horiz' style={{
@@ -192,8 +228,8 @@ export default class Chessboard extends Component {
             const cellsSize = this.props.size / 9.0;
             const sizeString = `${cellsSize}px`;
 
-            const left = cellsSize * (dragEnd.col - 0.5);
-            const top = cellsSize * (dragEnd.row - 0.5);
+            const left = cellsSize * (dragEnd.col + 0.5);
+            const top = cellsSize * (dragEnd.row + 0.5);
 
             return (
                 <img
@@ -263,11 +299,13 @@ export default class Chessboard extends Component {
 
     private handleDragStart = (event: any) => {
         event.preventDefault();
-        const boardRawCoordinates = this.mouseEventToBoardRawCoordinate(event);
+        event.stopPropagation();
+        const boardRawCoordinates = this.touchEventToBoardRawCoordinate(event);
+
         if (boardRawCoordinates !== undefined) {
             const allPiecesValues = this.getPiecesFromPosition(this.props.position);
-            const rank = this.props.reversed ? (8-boardRawCoordinates.row) : boardRawCoordinates.row-1;
-            const file = this.props.reversed ? (8-boardRawCoordinates.col) : boardRawCoordinates.col-1;
+            const rank = this.props.reversed ? (7-boardRawCoordinates.row) : boardRawCoordinates.row;
+            const file = this.props.reversed ? (7-boardRawCoordinates.col) : boardRawCoordinates.col;
 
             const pieceValue = allPiecesValues[rank][file];
             this.setState({
@@ -281,6 +319,7 @@ export default class Chessboard extends Component {
 
     private handleDragEnd = (event: any) => {
         event.preventDefault();
+        event.stopPropagation();
         this.setState({
             dragStart: undefined,
             dragEnd: undefined,
@@ -289,13 +328,14 @@ export default class Chessboard extends Component {
 
     private handleDragMove = (event: any) => {
         event.preventDefault();
+        event.stopPropagation();
         const dndStarted = this.state.dragStart !== undefined;
         if (dndStarted) {
-            const boardRawCoordinates = this.mouseEventToBoardRawCoordinate(event);
+            const boardRawCoordinates = this.touchEventToBoardRawCoordinate(event);
             const boardRawCoordinatesInBounds = 
                 boardRawCoordinates !== undefined &&
-                boardRawCoordinates.col >= 1 && boardRawCoordinates.col <= 8 &&
-                boardRawCoordinates.row >= 1 && boardRawCoordinates.row <= 8;
+                boardRawCoordinates.col >= 0 && boardRawCoordinates.col <= 7 &&
+                boardRawCoordinates.row >= 0 && boardRawCoordinates.row <= 7;
                 
             if (boardRawCoordinatesInBounds) {
                 this.setState({
@@ -305,20 +345,19 @@ export default class Chessboard extends Component {
         }
     }
 
-    private mouseEventToBoardRawCoordinate = (event: any) => {
+    private touchEventToBoardRawCoordinate = (event: any) => {
         const cellSize = (this.props.size / 9.0);
         const halfCellSize = cellSize / 2.0;
-        const clickLayer = this.clickLayer.current!;
-        if (clickLayer) {
-            const clickLayerBoundingRect = clickLayer.getBoundingClientRect();
-            const clickLayerX = clickLayerBoundingRect.left;
-            const clickLayerY = clickLayerBoundingRect.top;
-            const col = Math.floor((event.clientX - clickLayerX - halfCellSize) / cellSize) + 1;
-            const row = Math.floor((event.clientY - clickLayerY - halfCellSize) / cellSize) + 1;
 
-            return {col, row};
-        }
-        else return undefined;
+        const eventTouch = event.touches[0];
+
+        const clickLayer = this.clickLayer.current;
+        const clickBounds = clickLayer.getBoundingClientRect();
+
+        const col = Math.floor((eventTouch.clientX - clickBounds.left - halfCellSize) / cellSize);
+        const row = Math.floor((eventTouch.clientY - clickBounds.top - halfCellSize) / cellSize);
+
+        return {col, row};
     }
 
     private styles = () => {
@@ -337,34 +376,6 @@ export default class Chessboard extends Component {
                 'width': sizeString,
                 'height': sizeString,
             } as React.CSSProperties,
-            ".empty-zone": {
-                'backgroundColor': '#120D48',
-            } as React.CSSProperties,
-            ".white-cell": {
-                'display': 'flex',
-                'justifyContent': 'center',
-                'alignItems': 'center',
-                'backgroundColor': '#CA9326',
-            } as React.CSSProperties,
-            ".black-cell": {
-                'display': 'flex',
-                'justifyContent': 'center',
-                'alignItems': 'center',
-                'backgroundColor': '#482D0D',
-            } as React.CSSProperties,
-            ".drag-start-cell": {
-                'display': 'flex',
-                'justifyContent': 'center',
-                'alignItems': 'center',
-                'backgroundColor': '#34DD34',
-            } as React.CSSProperties,
-            ".drag-end-cell": {
-                'display': 'flex',
-                'justifyContent': 'center',
-                'alignItems': 'center',
-                'backgroundColor': '#5D30B0',
-            } as React.CSSProperties,
-
         }
     }
 }
