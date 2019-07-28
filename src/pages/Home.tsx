@@ -25,8 +25,6 @@ class Home extends Component {
   render() {
     const size = this.state.size;
 
-    console.log('size is', size);
-
     return (
       <>
         <IonHeader>
@@ -48,16 +46,11 @@ class Home extends Component {
   }
 
   private updateBoardSize = () => {
-    console.log('updating board size');
-
     const size = this.computeBoardSize();
     this.setState({ size });
   }
 
   private computeBoardSize = () => {
-    console.log('dimensions', window.innerWidth, window.innerHeight);
-    console.log(window.screen.orientation.type);
-    
     const baseSize =  window.innerWidth < window.innerHeight ?
     window.innerWidth : window.innerHeight;
 

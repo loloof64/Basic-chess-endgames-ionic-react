@@ -1,4 +1,8 @@
 import React, { Component, createRef } from "react";
+import ChessboardEmptyCell from './ChessboardEmptyCell';
+import ChessboardCell from './ChessboardCell';
+import ChessboardCoord from './ChessboardCoord';
+import ChessboardPlayerTurn from './ChessboardPlayerTurn';
 
 interface DragStartInformations {
     col: number,
@@ -26,14 +30,53 @@ export default class Chessboard extends Component {
         const pieces = this.getPiecesFromPosition(position);
         const whiteToPlay = position.split(" ")[1] === 'w';
         const reversed = this.props.reversed || false;
+        const cellSize = this.props.size / 9.0;
 
         return (
             <div style={{...this.props.style, ...this.styles()[".board-root"]}}>
-                {[0,1,2,3,4,5,6,7,8,9].map((row: number) => {
-                    return [0,1,2,3,4,5,6,7,8,9].map((col: number) => {
-                        return this.generateCell(row, col, whiteToPlay, reversed);
-                    });
+                <ChessboardEmptyCell></ChessboardEmptyCell>
+                <ChessboardCoord key_value={'0_top'} value={reversed ? 'H' : 'A'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'1_top'} value={reversed ? 'G' : 'B'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'2_top'} value={reversed ? 'F' : 'C'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'3_top'} value={reversed ? 'E' : 'D'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'4_top'} value={reversed ? 'D' : 'E'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'5_top'} value={reversed ? 'C' : 'F'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'6_top'} value={reversed ? 'B' : 'G'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'7_top'} value={reversed ? 'A' : 'H'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardEmptyCell></ChessboardEmptyCell>
+
+                {[0,1,2,3,4,5,6,7].map((row: number) => {
+                    const rankCoordBase = reversed ? '1' : '8';
+                    const rankCoord = String.fromCharCode(rankCoordBase.charCodeAt(0) + row);
+
+                    return (
+                        <>
+                            <ChessboardCoord key_value={`${7-row}_left`} value={rankCoord} cellSize={cellSize}></ChessboardCoord>
+                            <ChessboardCell key_value={`${7-row}0`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}1`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}2`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}3`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}4`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}5`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}6`} whiteCell={(row % 2) === 0} size={cellSize}></ChessboardCell>
+                            <ChessboardCell key_value={`${7-row}7`} whiteCell={(row % 2) !== 0} size={cellSize}></ChessboardCell>
+                            <ChessboardCoord key_value={`${7-row}_right`} value={rankCoord} cellSize={cellSize}></ChessboardCoord>
+                        </>
+                    );
                 })}
+
+                <ChessboardEmptyCell></ChessboardEmptyCell>
+                <ChessboardCoord key_value={'0_bottom'} value={reversed ? 'H' : 'A'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'1_bottom'} value={reversed ? 'G' : 'B'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'2_bottom'} value={reversed ? 'F' : 'C'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'3_bottom'} value={reversed ? 'E' : 'D'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'4_bottom'} value={reversed ? 'D' : 'E'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'5_bottom'} value={reversed ? 'C' : 'F'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'6_bottom'} value={reversed ? 'B' : 'G'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardCoord key_value={'7_bottom'} value={reversed ? 'A' : 'H'} cellSize={cellSize}></ChessboardCoord>
+                <ChessboardPlayerTurn whiteToPlay={whiteToPlay} cellSize={cellSize}></ChessboardPlayerTurn>
+
+
                 {
                     this.generateDndEndCellGuides()
                 }
@@ -52,66 +95,6 @@ export default class Chessboard extends Component {
                     onPointerMove={this.handleDragMove}
                     ref={this.clickLayer}
                 ></div>
-            </div>
-        )
-    }
-
-    private generateCell = (row: number, col: number,
-         whiteToPlay: boolean, reversed: boolean) => {
-        const key = `${row}${col}`;
-        if (row === 0 || row === 9) {
-            if (col >= 1 && col <= 8) {
-                return this.generateFileCoordinate(key, col, reversed);
-            }
-            else if (row === 9 && col === 9) {
-                return this.generatePlayerTurn(key, whiteToPlay);
-            }
-        }
-        else {
-            if (col === 0 || col === 9) {
-                return this.generateRankCoordinate(key, row, reversed);
-            }
-            else {
-                return this.generateRegularCell(key, row, col, reversed);
-            }
-        }
-        return (
-            <div key={key} style={this.styles()[".empty-zone"]}></div>
-        );
-    }
-
-    private generateFileCoordinate = (key: string, col: number, reversed: boolean) => {
-        const valueString = String.fromCharCode('A'.charCodeAt(0) + (reversed ? (8-col) : (col - 1)));
-        return (<div key={key} style={this.styles()[".coord"]}>{valueString}</div>);
-    }
-
-    private generateRankCoordinate = (key: string, row: number, reversed: boolean) => {
-        const valueString = String.fromCharCode('1'.charCodeAt(0) + (reversed ? (row - 1) : (8 - row)));
-        return (<div key={key} style={this.styles()[".coord"]}>{valueString}</div>);
-    }
-
-    private generateRegularCell = (key: string, row: number, col: number, 
-        reversed: boolean) => {
-        const isWhiteCell = (row + col) % 2 === 0;
-        let style = isWhiteCell ? this.styles()['.white-cell'] : this.styles()['.black-cell'];
-
-        const dragStart = this.state.dragStart;
-        if (dragStart !== undefined && dragStart.col === col && dragStart.row === row){
-            style = this.styles()['.drag-start-cell']
-        }
-
-        const dragEnd = this.state.dragEnd;
-        if (dragEnd !== undefined && dragEnd.col === col && dragEnd.row === row){
-            style = this.styles()['.drag-end-cell']
-        }
-
-        return (<div key={key} style={style}></div>)
-    }
-
-    private generatePlayerTurn = (key: string, whiteToPlay: boolean) => {
-        return (
-            <div key={key} style={this.styles()['.empty-zone']}>
-                <div style={this.styles()[whiteToPlay ? '.turn-white' : '.turn-black']}></div>
             </div>
         )
     }
@@ -341,8 +324,6 @@ export default class Chessboard extends Component {
     private styles = () => {
         const size = this.props.size;
         const sizeString = `${size}px`;
-        const cellSizeString = `${size / 18.0}px`;
-        const fontSize = Math.ceil(size * 0.02);
 
         return {
             ".board-root": {
@@ -383,33 +364,7 @@ export default class Chessboard extends Component {
                 'alignItems': 'center',
                 'backgroundColor': '#5D30B0',
             } as React.CSSProperties,
-            ".coord": {
-                'display': 'flex',
-                'justifyContent': 'center',
-                'alignItems': 'center',
-                'backgroundColor': '#120D48',
-                'color': '#DADF48',
-                'fontWeight': 'bold',
-                'fontSize': `${fontSize}px`, 
-            } as React.CSSProperties,
-            ".turn-white": {
-                'display': 'flex',
-                'justifyContent': 'center',
-                'alignItems': 'center',
-                'borderRadius': '100%',
-                'backgroundColor': '#FFF',
-                'width': cellSizeString,
-                'height': cellSizeString,
-            },
-            ".turn-black": {
-                'display': 'flex',
-                'justifyContent': 'center',
-                'alignItems': 'center',
-                'borderRadius': '100%',
-                'backgroundColor': '#000',
-                'width': cellSizeString,
-                'height': cellSizeString,
-            } as React.CSSProperties,
+
         }
     }
 }
