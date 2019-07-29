@@ -2,9 +2,15 @@
 
 Train your basic chess endgames understanding against your device.
 
-## Credits
+## Credits and acknowledgements
 
-Using vectors from Wikimedia Commons and designed by Cburnett.
+Thanks to all authors of these
+
+* Using vectors from Wikimedia Commons and designed by Cburnett.
+* Using [stockfish.js](https://github.com/niklasf/stockfish.js) library.
+* Author of [ChessEndgameTraining](https://github.com/supertorpe/chessendgametraining).
+* Stockfish chess engine authors.
+* Users of Slack channel of Ionic.
 
 ## Installing on Android (debug)
 

@@ -4,8 +4,7 @@ import Chessboard from './Chessboard';
 import DragMoveStart from './DragMoveStart';
 import DragMoveEnd from './DragMoveEnd';
 import PromotionDialogModal from './PromotionDialogModal';
-import { bool } from 'prop-types';
-import { cpus } from 'os';
+import ChessEngineCommunication from '../../services/ChessEngineCommunication';
 
 const Chess = require('chess.js');
 
@@ -15,6 +14,8 @@ interface PendingMove {
 }
 
 export default class PlayableChessboard extends Component<{reversed: boolean, size: number, style: object}> {
+    engineCommunicationLayer: ChessEngineCommunication;
+
     state = {
         gameLogic: new Chess(),
         promotionModalOpen: false,
@@ -22,6 +23,13 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
         showGameEndedToast: false,
         gameEndedMessage: undefined as string,
         gameInProgress: true,
+    }
+
+    constructor(props: any) {
+        super(props);
+        this.engineCommunicationLayer = new ChessEngineCommunication(
+            this.handleEngineOutput
+        );
     }
 
     render() {
@@ -48,6 +56,10 @@ export default class PlayableChessboard extends Component<{reversed: boolean, si
                 duration={800}
             ></IonToast>
         </>);
+    }
+
+    private handleEngineOutput = (line: string) => {
+        console.log(line);
     }
 
     private handleMove = (start: DragMoveStart, end: DragMoveEnd) => {
